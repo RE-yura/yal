@@ -1,0 +1,13 @@
+# 全てのディレクトリから.vscodeを無視
+.vscode/
+
+# buildの中身を全部無視(相対パスで指定)
+/build/*
+!/build/.gitkeep
+
+# samplesの実行ファイルを無視
+/samples/*/*
+!/samples/*/Makefile
+!/samples/*/*.h
+!/samples/*/*.cpp
+
