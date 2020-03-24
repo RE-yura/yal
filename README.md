@@ -1,4 +1,4 @@
-# Library for Robot Control written by Yura Aoyama
+# Library for Robot Control written by RE-yura
 ロボット制御用C++ライブラリ
 
 ## Clone & Compile & Install
