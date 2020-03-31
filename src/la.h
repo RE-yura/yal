@@ -6,6 +6,7 @@
 #include<stdarg.h>
 #include<math.h>
 #include<utility> // for std:swap
+// #include "print.h"
 
 //#define DEBUG
 
@@ -18,8 +19,8 @@
 #endif
 
 //#define DEBUG_PRINT(...) fprintf(stderr,__VA_ARGS__)
-#define KTLV2(V)  ((V)[0]), ((V)[1])
-#define KTLV3(V)  ((V)[0]), ((V)[1]), ((V)[2])
+#define YALV2(V)  ((V)[0]), ((V)[1])
+#define YALV3(V)  ((V)[0]), ((V)[1]), ((V)[2])
 
 namespace Yal{
 
@@ -294,26 +295,21 @@ template<int size> class Vector{
 
 };
 
-/** Matrix.
- *  h 行 w 列の行列 \n
- *  横ベクトルを縦に並べたもの
- *  @see Vector
- */
-template<int h,int w> class Matrix{
+// ========== 行列 (ｈ行ｗ列) =============================
+template <int h, int w> 
+class Matrix {
+ private:
   Vector<w> v[h]; // 横ベクトルを縦に並べたもの
 
  public:
-  /** 単位行列として初期化  */
-  /** 零行列として初期化すべき  */
-  Matrix(){ // 単位行列
-    for (int i = 0; i < h ; i++) 
-      for (int j = 0; j < w ; j++)
-	//v[i][j] = (i==j) ? 1.0 : 0.0;
-	v[i][j] =  0.0;
+  Matrix() {    // 零行列として初期化
+    for (int i = 0; i < h; i++)
+      for (int j = 0; j < w; j++)
+        v[i][j] = 0.0;
   }
 
   /** 全ての要素の値を指定して生成
-   * @param v00 最初の要素値
+   *  @param v00 最初の要素値
    */
   Matrix(double v00 , ...) {
     va_list args;
@@ -321,17 +317,46 @@ template<int h,int w> class Matrix{
     v[0][0] = v00;
     for (int i = 0 ; i < h ; i++) {
       for (int j = 0 ; j < w ; j++){
-	if( i == 0 && j == 0 ) continue;
-	v[i][j] = (double) va_arg(args , double);
+        if( i == 0 && j == 0 ) continue;
+        v[i][j] = (double) va_arg(args , double);
       }
     }
     va_end(args);
   }
 
+  /** 零行列 or 単位行列の生成
+   *  @param type zero->零行列 identify->単位行列
+   */
+  Matrix(int n){  
+    switch (n)
+    {
+    case 0:
+      for (int i = 0; i < h; i++)
+        for (int j = 0; j < w; j++)
+          v[i][j] = 0.0;
+      break;
+    
+    case 1:
+      if(h != w){
+        printf("正方行列ではありません．\n");
+        break;
+      }
+      for (int i = 0; i < h; i++)
+        for (int j = 0; j < w; j++)
+          v[i][j] = (i==j) ? 1.0 : 0.0;
+      break;
+    
+    default:
+      printf("0か1を入力して下さい．(要素指定ならdoubleを入力)\n");
+      break;
+    }
+  }
+  
+
   /** 回転行列として生成する(したがって3次元のみ).
    * @param axis 回転軸
    * @param theta 回転角度 [rad]
-   */
+  */
   Matrix( Direction axis, double theta){
     setRot(axis,theta);
   }
@@ -339,7 +364,7 @@ template<int h,int w> class Matrix{
   /** 回転行列として生成する(したがって3次元のみ).
    * @param axis 回転軸
    * @param theta 回転角度 [rad]
-   */
+  */
   Matrix( Vector<3> axis, double theta){
     setRot(axis,theta);
   }
@@ -347,32 +372,46 @@ template<int h,int w> class Matrix{
   Vector<w>& operator[](unsigned int i){ return v[i]; }
   const Vector<w> operator[](unsigned int i)const { return v[i]; }
 
-
   /** 行ベクトルの取得 
-   * @param n 行のインデックス
-   * @return n行目の行ベクトル
+   *  @param n 行のインデックス
+   *  @return n行目の行ベクトル
    */ 
   const Vector<w> row(unsigned int n)const { return v[n]; }
+  /** 行ベクトルへの代入 
+   *  @param n 行のインデックス
+   *  @param V 代入するベクトル
+   */
   void row(unsigned int n,const Vector<w>& V){ 
     v[n] = V;
   }
+  /** 列数の取得 
+   *  @return 取得した列数
+   */
+  int rows(){
+    return w;
+  }
 
   /** 列ベクトルの取得 
-   * @param n 列のインデックス
-   * @return n列目の列ベクトル
+   *  @param n 列のインデックス
+   *  @return n列目の列ベクトル
    */ 
   const Vector<h> column(unsigned int n)const { 
     Vector<h> Vret;
     for(int i=0; i<h;i++ ) Vret[i] = v[i][n];
     return Vret; 
   }
-
   /** 列ベクトルへの代入 
-   * @param n 列のインデックス
-   * @param V 代入するベクトル
+   *  @param n 列のインデックス
+   *  @param V 代入するベクトル
    */
   void column(unsigned int n,const Vector<h>& V){ 
     for(int i=0; i<h;i++ ) v[i][n] = V[i];
+  }
+  /** 行数の取得 
+   *  @return 取得した行数
+   */
+  int columns(){
+    return h;
   }
 
   Matrix& operator=(const Matrix& M){
@@ -425,18 +464,19 @@ template<int h,int w> class Matrix{
     return Mret;
   }
   template <int M_w> 
-    Matrix<h,M_w> operator*(const Matrix<w,M_w>& M) const{
+  Matrix<h,M_w> operator*(const Matrix<w,M_w>& M) const {
     Matrix<h,M_w> Mret;
-    for(int i=0; i<h; i++){
-      for(int j=0; j<M_w; j++){
-	Mret[i][j] = 0.0;
-	for(int k=0; k<w; k++)
-	  Mret[i][j] += v[i][k] * M[k][j];
+    for(int i=0; i<h; i++) {
+      for(int j=0; j<M_w; j++) {
+        Mret[i][j] = 0.0;
+        for(int k=0; k<w; k++)
+          Mret[i][j] += v[i][k] * M[k][j];
       }
     }
     return Mret;
   }
-  
+
+
   Vector<h> operator*(const Vector<w>& V)const{
     Vector<h> Vret;
     for(int i=0; i<h; i++)  Vret[i] += (v[i] & V);
@@ -446,6 +486,17 @@ template<int h,int w> class Matrix{
     Matrix<h,w> Mret;
     for(int i=0; i<h; i++)  Mret[i] = c * M[i];
     return Mret;
+  }
+  template <int T>
+  Vector<T> operator*(const Vector<T>& V)const{
+    Vector<T> Vret;
+    if(h==1 && w==1) {
+      Vret = v[0][0] * V;
+      return Vret;
+    } else {
+      printf("無効な計算です．\n");
+      return Vret;
+    }
   }
   friend Matrix<h,w> operator/(double c, const Matrix<h,w>& M){
     Matrix<h,w> Mret;
@@ -690,12 +741,13 @@ template<int h,int w> class Matrix{
    * @param n 改行の数
    */
   void print(int n=1) const{
-    for(int i=0;i<h;i++){
+    for(int i=0;i<h;i++) {
       for(int j=0;j<w;j++)
-	printf("%10.3f ",v[i][j] );
+	      printf("%10.3f ",v[i][j] );
       putchar('\n');
     }
     for(int i=0;i<n-1;i++) putchar('\n');
+    printf("\n");
   }
 
   /** 要素のセット
@@ -872,20 +924,13 @@ template<int h,int w> class Matrix{
  }
 };
 
-extern Vector<3> EulerAngle(const Vector<3>& n,
-			    const Vector<3>& m);
-extern Vector<3> EulerAngle(const Matrix<3,3>& R);
-extern Vector<3> RPYAngle(const Matrix<3,3>& R);
-extern Vector<3> rotate(const Vector<3>& V,Direction axis,
-			double theta);
-extern Vector<3> rotate(const Vector<3>& V, 
-			const Vector<3>& axis,
-			double theta);
-extern Matrix<3,3> rotate(const Matrix<3,3>& A,Direction axis,
-			  double theta);
-extern Matrix<3,3> rotate(const Matrix<3,3>& A,
-			  const Vector<3>& axis,
-			  double theta);
+extern Vector<3>   EulerAngle(const Vector<3>& n, const Vector<3>& m);
+extern Vector<3>   EulerAngle(const Matrix<3,3>& R);
+extern Vector<3>   RPYAngle(const Matrix<3,3>& R);
+extern Vector<3>   rotate(const Vector<3>& V,Direction axis, double theta);
+extern Vector<3>   rotate(const Vector<3>& V, const Vector<3>& axis, double theta);
+extern Matrix<3,3> rotate(const Matrix<3,3>& A,Direction axis, double theta);
+extern Matrix<3,3> rotate(const Matrix<3,3>& A, const Vector<3>& axis, double theta);
 extern Matrix<3,3> ZYZMatrix(double a,double b,double c);
 extern Matrix<3,3> ZYZMatrix(const  Vector<3>& euler);
 extern Vector<3>   ZYZAngle(const Vector<3>& n,const Vector<3>& m);
@@ -907,7 +952,7 @@ extern Matrix<3,3> XZYMatrix(const Vector<3>& pose);
 extern Vector<3>   XZYAngle(const Matrix<3,3>& R);
 extern Matrix<3,3> YZXMatrix(double y,double z,double x);
 extern Matrix<3,3> YZXMatrix(const Vector<3>& pose);
-extern Vector<3>   YZXAngle(const Matrix<3,3>& R);        
+extern Vector<3>   YZXAngle(const Matrix<3,3>& R);
 extern Matrix<3,3> ZXYMatrix(double z,double x,double y); // 追加
 extern Matrix<3,3> ZXYMatrix(const Vector<3>& pose);       // 追加
 extern Vector<3>   ZXYAngle(const Matrix<3,3>& R);          // 追加
@@ -916,10 +961,9 @@ extern Matrix<3,3> ITPMatrix(const Vector<3>& pose);
 extern Vector<3>   ITPAngle(const Matrix<3,3>& R);
 
 
-extern Matrix<3,3> rotationMatrix(const Vector<3>& n,
-				  const Vector<3>& m);
+extern Matrix<3,3> rotationMatrix(const Vector<3>& n, const Vector<3>& m);
 template<int l>
-Vector<l> normal(const Vector<l>& V){
+Vector<l> normal(const Vector<l>& V) {
   Vector<l> Vret = V;
   Vret.normalize();
   return Vret;

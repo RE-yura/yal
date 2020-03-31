@@ -76,7 +76,6 @@ class Sender{
   U rdata;
 
   Sender() {
-
   }
 
   ~Sender() {

@@ -1,7 +1,6 @@
 #include<math.h>
 #include<stdlib.h>
 #include<stdarg.h>
-#include"util.h"
 #include"la.h"
 
 using namespace Yal;

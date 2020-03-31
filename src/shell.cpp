@@ -2,7 +2,7 @@
 #include<stdarg.h>
 #include<stdlib.h>
 #include<math.h>
-#include"util.h"
+#include "shell.h"
 
 /** 数値を時刻テキストに変換する.
  * @param t 時刻 [s]
@@ -11,40 +11,45 @@
 const char* Yal::formatTime(double t,int ftype){
   static char time_str[128];
   int time = (int)t;
-  switch(ftype){
-  case HMSD:{
+  switch(ftype) {
+  case HMSD:
+    {
     int h    = time / 3600;
     int m    = (time%3600) / 60;
     int s    = time % 60;
     int ss   = (int)(10*(t-time));
     sprintf(time_str,"%3d:%02d:%02d:%01d",h,m,s,ss);
-  }
+    }
     break;
-  case HMS:{
+  case HMS:
+    {
     int h    = time / 3600;
     int m    = (time%3600) / 60;
     int s    = time % 60;
     sprintf(time_str,"%3d:%02d:%02d",h,m,s);
-  }
+    }
     break;
-  case MSD:{
+  case MSD:
+    {
     int m    = time / 60;
     int s    = time % 60;
     int ss   = (int)(10*(t-time));
     sprintf(time_str,"%02d:%02d:%01d",m,s,ss);
-  }
+    }
     break;
-  case MS:{
+  case MS:
+    {
     int m    = time / 60;
     int s    = time % 60;
     sprintf(time_str,"%02d:%02d",m,s);
-  }
+    }
     break;
-  case SD:{
+  case SD:
+    {
     int s    = time % 60;
     int ss   = (int)(10*(t-time));
     sprintf(time_str,"%02d:%01d",s,ss);
-  }
+    }
     break;
   }
   /*
@@ -67,18 +72,17 @@ const char* Yal::formatTime(double t,int ftype){
  * printfと同様に変換指示子が使える.
  * @param format コマンドのフォーマット
  */
-void Yal::shell(const char *format, ...){
-  char   buf[256];
+void Yal::shell(const char *format, ...) {
+  char buf[256];
   va_list args;
   va_start(args,format);
   vsprintf(buf, format, args);
   va_end(args);
-
   system(buf);
 }
 
-FILE* Yal::popenf(const char *format,const char *rw, ...){
-  char   buf[512];
+FILE* Yal::popenf(const char *format,const char *rw, ...) {
+  char buf[512];
   va_list args;
   va_start(args,rw);
   vsprintf(buf, format, args);
@@ -86,13 +90,12 @@ FILE* Yal::popenf(const char *format,const char *rw, ...){
   return popen(buf,rw);
 }
 
-double Yal::get_cpufreq(){ //only user space
+double Yal::get_cpufreq() { //only user space
   double tps=1000;
   FILE* fp = popen("grep \"cpu MHz\" < /proc/cpuinfo","r");
   fscanf(fp,"%*s %*s %*s %lf",&tps);
   pclose(fp);
   tps *= 1e6;
-  //printf("tps = %f\n",tps);
   return tps;
 }
 
