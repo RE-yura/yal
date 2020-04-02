@@ -1,4 +1,4 @@
-# Library for Robot Control written by RE-yura
+# C++ Library for Robot Control written by RE-yura
 ロボット制御用C++ライブラリ
 
 ## Clone & Compile & Install
@@ -12,9 +12,14 @@ $ sudo make install
 
 ## Contents List
 - 線形代数(ベクトル, 行列)
-- 各種フィルタ(ローパス, ハイパス)
+- 各種フィルタ(ローパス, ハイパス, 閾値)
 - UDP通信
 - プロセス間通信(FIFO)
+- 軌道生成
+- print(まるでPythonのように簡単に)
+- インピーダンス制御(インピーダンス提示型, アドミタンス提示型)
+- ボールねじ計算
+- シェルコマンド実行
 
 ## Usage
 1. まずは，`#include <yal.h>`をする．

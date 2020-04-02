@@ -5,7 +5,7 @@ cmake_minimum_required(VERSION 2.8)
 project(yal_cmake CXX)
 
 # C++11を使用
-add_definitions("-Wall -std=c++11")
+add_definitions("-Wall -std=c++14")
 
 # ソースコードのディレクトリを設定
 set(SRC_DIR src)
