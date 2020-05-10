@@ -1,16 +1,25 @@
 # CMakeのバージョンを設定
 cmake_minimum_required(VERSION 2.8)
 
-add_subdirectory(rttask)
+# サブディレクトリのCMakeLists.txtを見に行く
+# add_subdirectory(rttask)
 
-# cppファイルをMY_SOURCEに追加
-file(GLOB MY_SOURCE *.cpp)
+# cppファイルを検索
+## 同じ階層にあるcppファイルをSRCに格納
+file(GLOB SRC *.cpp)
+
+## ./rttaskにあるcppファイルをSRC_RTTASKに格納
+file(GLOB SRC_RTTASK rttask/*.cpp)
+
+
 # hファイルをMY_HEADERに追加
 file(GLOB MY_HEADER *.h)
+file(GLOB HEADER_RTTASK rttask/*.h)
 
 # 静的ライブラリlibyal.aを作成
 add_library(yal STATIC
-  ${MY_SOURCE}
+  ${SRC}
+  ${SRC_RTTASK}
 )
 
 # ヘッダーファイルのパスを教えてあげる
@@ -27,6 +36,9 @@ install(FILES yal.h
 )
 install(FILES ${MY_HEADER}
   DESTINATION /usr/local/include/yal
+)
+install(FILES ${HEADER_RTTASK}
+  DESTINATION /usr/local/include/ktl/rttask
 )
 install(FILES ${PROJECT_SOURCE_DIR}/build/src/libyal.a
   DESTINATION /usr/local/lib  

@@ -1,6 +1,6 @@
 CXX = g++
 CXXFLAGS += -Wall
-LDLIBS = -lyal -lyalrt -lpthread
+LDLIBS = -lyal -lpthread
 
 SRCS = $(wildcard ./*.cpp)
 OBJS = $(SRCS:.cpp=.o)

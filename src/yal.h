@@ -12,6 +12,7 @@
 #include <yal/impedance_control.h>
 #include <yal/shell.h>
 #include <yal/trajectory.h>
+#include <yal/timer.h>
 
 #include <yal/rttask/fifo.h>
 

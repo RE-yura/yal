@@ -23,6 +23,6 @@ $ sudo make install
 
 ## Usage
 1. まずは，`#include <yal.h>`をする．
-1. ビルド時は`g++ hogehoge.cpp -lyal -lyalrt -pthread`でリンクする．
+1. ビルド時は`g++ hogehoge.cpp -lyal -pthread`でリンクする．
 1. 各機能を用いた簡単なサンプルが/samplesに置いてあるので，そちらを見ながら実装．
 
