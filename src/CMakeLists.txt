@@ -38,7 +38,7 @@ install(FILES ${MY_HEADER}
   DESTINATION /usr/local/include/yal
 )
 install(FILES ${HEADER_RTTASK}
-  DESTINATION /usr/local/include/ktl/rttask
+  DESTINATION /usr/local/include/yal/rttask
 )
 install(FILES ${PROJECT_SOURCE_DIR}/build/src/libyal.a
   DESTINATION /usr/local/lib  
